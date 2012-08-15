@@ -1,0 +1,34 @@
+today things:
+new labels
+solder rotary encoder pins on
+write and practice demonstration
+make simultaneous demo nicer
+block diagrams explaining how things work
+
+do things:
+write up in detail about the student board control and progress so far
+write 'psuedo' code for student board that will do the correct control. organize the directory structure.
+check code comments
+documentation. Take pictures.  how to make things work. problems. hardware problems.
+sticky labels with A-A B-B arrows on them, cover unused ports.
+organize all directories
+make a todo list for future years
+reduce the speed poll rate on the motor board
+organize student board directory
+save motor driver datasheets
+update API so it's 0-256 (well less than that) for acceleration setting
+tell to go to error state from USB
+
+maybe things:
+get another student board
+brake continues to move due to noise still
+have a IsMoving() high level function
+put everything in a CMS
+blinky sensor 7segment
+maybe that atmega isn't actually fried and its just pwmA
+
+need to get:
+sticky labels for cables
+black vivid for marking cables and stuff
+
+
