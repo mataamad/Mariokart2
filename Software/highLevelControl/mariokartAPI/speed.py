@@ -31,7 +31,8 @@ MAX_SPEED = 50
 
 
 #for setting the acceleration directly, should not be used except during testing
-MAX_ACCELERATION = 3000
+#256 - 10%
+MAX_ACCELERATION = (220)
 
 '''-------------------------
        PUBLIC FUNCTIONS
@@ -68,7 +69,7 @@ def StopKart():
 #a sufficiently low acceleration will instead do regenerative braking
 #basically, use this at your own risk
 def SetAcceleration(acceleration):
-    #if acceleration >= 0 and acceleration <= MAX_ACCELERATION:
-    return UsbController.SetValue(definitions.ADDR_MOTOR, definitions.VAR_ACCELERATION, acceleration)
-    #else:
-    #return False;
+    if acceleration >= 0 and acceleration <= MAX_ACCELERATION:
+        return UsbController.SetValue(definitions.ADDR_MOTOR, definitions.VAR_ACCELERATION, acceleration)
+    else:
+        return False;
