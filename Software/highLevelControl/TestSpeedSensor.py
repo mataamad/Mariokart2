@@ -8,7 +8,9 @@ def testSpeedSensor():
         print(speed.GetSpeed())
         time.sleep(0.5)
 
-UsbController.Open()
-testSpeedSensor()
 
-UsbController.Close()
+if __name__ == "__main__":
+    UsbController.Open()
+    testSpeedSensor()
+
+    UsbController.Close()

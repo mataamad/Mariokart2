@@ -32,6 +32,7 @@ def testBrake():
 
     print("done brake test")
 
-UsbController.Open()
-testBrake()
-UsbController.Close()
+if __name__ == "__main__":
+    UsbController.Open()
+    testBrake()
+    UsbController.Close()

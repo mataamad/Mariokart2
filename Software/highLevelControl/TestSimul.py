@@ -15,7 +15,9 @@ def TestSimultaneous():
     steering.SetAngle(-10)
     print(speed.GetSpeed())
 
-UsbController.Open()
 
-TestSimultaneous()
-UsbController.Close()
+if __name__ == "__main__":
+    UsbController.Open()
+
+    TestSimultaneous()
+    UsbController.Close()

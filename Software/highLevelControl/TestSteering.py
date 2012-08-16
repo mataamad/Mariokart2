@@ -87,8 +87,8 @@ def testSteering():
     print(steering.GetAngle())
     print("done test steering")
 
-
-UsbController.Open()
-testSteering()
-testSteeringNegative()
-UsbController.Close()
+if __name__ == "__main__":
+    UsbController.Open()
+    testSteering()
+    testSteeringNegative()
+    UsbController.Close()

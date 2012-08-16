@@ -9,8 +9,10 @@ def testSpiMany():
         time.sleep(0.1)
     print("done")
 
-UsbController.Open()
-    
-testSpiMany()
 
-UsbController.Close()
+if __name__ == "__main__":
+    UsbController.Open()
+        
+    testSpiMany()
+
+    UsbController.Close()
