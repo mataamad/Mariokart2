@@ -36,11 +36,15 @@
 
 //define ALL_CLIENTS ((1<<ADDR_BRAKE) | (1<<ADDR_SENSOR) | (1<<ADDR_MOTOR))
 
+
+#define KEEPALIVE_TIMEOUT_MULTIPLIER (10)
 volatile bool timeout = false; //periodically set to true for running events at a constant rate
 
 static int brake_position = 0;
 static int steering_angle = 0;
 static int kart_speed = 0;
+
+unsigned board_keep_alive_responses = ALL_CLIENTS;
 
 
 /**
@@ -243,33 +247,36 @@ If a 'set' command is received it is forwaded through to the board it was intend
 */
 void do_usb_step(void) {
     message_t usb_msg = UsbRead();
-    if (usb_msg.command != CMD_NONE) {
 
-        switch (usb_msg.command) {
-            case CMD_GET:
-                //on get commands send the USB controller the locally cached variable value
-                switch (usb_msg.data[0]) {
-                    case VAR_BRK_POS:
-                        usb_send_reply(VAR_BRK_POS, brake_position);
-                        break;
-                    case VAR_STEERING_ANGLE:
-                        usb_send_reply(VAR_STEERING_ANGLE, steering_angle);
-                        break;
-                    default:
-                    case VAR_SPEED:
-                        usb_send_reply(VAR_SPEED, kart_speed);
-                        break;
-                }
+    switch (usb_msg.command) {
+        case CMD_NONE:
+            break;
+        case CMD_GET:
+            //on get commands send the USB controller the locally cached variable value
+            switch (usb_msg.data[0]) {
+                case VAR_BRK_POS:
+                    usb_send_reply(VAR_BRK_POS, brake_position);
+                    break;
+                case VAR_STEERING_ANGLE:
+                    usb_send_reply(VAR_STEERING_ANGLE, steering_angle);
+                    break;
+                case VAR_SPEED:
+                    usb_send_reply(VAR_SPEED, kart_speed);
+                    break;
+                default:
+                    proto_state_error();
+                    break;
+            }
 
-                break; 
-            case CMD_SET:
-                //for set commands we can simply forward the message on to the intended recipient because
-                //the server side USB code has set the .to to the board it wants ot send the command to
-                proto_write(usb_msg);
-                break;
-            default:
-                break;
-        }
+            break; 
+        case CMD_SET:
+            //for set commands we can simply forward the message on to the intended recipient because
+            //the server side USB code has set the .to to the board it wants ot send the command to
+            proto_write(usb_msg);
+            break;
+        default:
+            proto_state_error();
+            break;
     }
 }
 
@@ -299,6 +306,7 @@ void check_CANBUS_messages_step() {
                 break;
                 
             case CMD_REPLY:
+                board_keep_alive_responses |= 1 << msg.from;
                 switch (msg.data[0]) {
                     case VAR_BRK_POS:
                         brake_position = data_to_int(msg.data);
@@ -317,6 +325,11 @@ void check_CANBUS_messages_step() {
                 break;
 
             case CMD_ACK_SET:
+                board_keep_alive_responses |= 1 << msg.from;
+                break;
+
+            case CMD_KEEP_ALIVE:
+                board_keep_alive_responses |= 1 << msg.from;
                 break;
 
             // Invalid response
@@ -327,7 +340,6 @@ void check_CANBUS_messages_step() {
         }
     } while (msg.command != CMD_NONE);
 }
-
 
 int main(int argc, char *argv[]) {
     debug_init(SOFTWARE_NAME);
@@ -346,6 +358,7 @@ int main(int argc, char *argv[]) {
 
 
     unsigned responses = 0;
+    unsigned i = 0;
 
     while(1) {    
         switch (proto_state()) {
@@ -367,9 +380,22 @@ int main(int argc, char *argv[]) {
                     request_steering_value();
                     request_speed_value();
                     send_motor_keep_alive();
-
-
+                    
                     proto_refresh();
+
+                    i++;
+                    if (i == KEEPALIVE_TIMEOUT_MULTIPLIER) {
+                    
+                        if (board_keep_alive_responses != ALL_CLIENTS) {
+                            proto_state_error();
+                        }
+
+                        board_keep_alive_responses = 0;
+                    }
+                    i %= KEEPALIVE_TIMEOUT_MULTIPLIER;
+
+
+
                 }
 
                 break;

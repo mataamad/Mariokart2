@@ -140,12 +140,25 @@ void timer_callback(void) {
     char_display_tick();
 }
 
+
+//acknowledge a set request
 void send_ack(message_t orig_msg) {
     message_t msg = {
         .from     = ADDR_MOTOR,
         .to       = orig_msg.from,
         .command  = CMD_ACK_SET,
         .data[0]  = orig_msg.data[0],
+    };
+    proto_write(msg);
+}
+
+
+//send a keep alive reply back to the comms board so that it knows this board is still connected
+void send_keep_alive() {
+    message_t msg = {
+        .from     = ADDR_MOTOR,
+        .to       = ADDR_COMMS,
+        .command  = CMD_KEEP_ALIVE,
     };
     proto_write(msg);
 }
@@ -259,6 +272,7 @@ int main(int argc, char *argv[]) {
                         }
 
                     case CMD_KEEP_ALIVE:
+                        send_keep_alive();
                         proto_refresh();
                     case CMD_NONE:
                         break;

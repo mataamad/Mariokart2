@@ -7,7 +7,7 @@ This function can only be used to calculate PID gains for one peripheral*/
 int pid_calculate_gain(int desired, int current, double P, double I, double D) {
     static int err = 0;
     static int err_old = 0;
-    static int I_err;
+    static int I_err = 0;
 
     int P_err;
     int D_err;
@@ -17,6 +17,7 @@ int pid_calculate_gain(int desired, int current, double P, double I, double D) {
 
     P_err = err;
     I_err += err;
+
     D_err = err - err_old;
 
     int drive_percent = P * P_err + I * I_err + D*D_err;

@@ -21,12 +21,10 @@ from sys import stderr, exit, argv
 from serial import Serial, SerialException
 from definitions import *
 import struct
+import error
 
 
 
-#exception thrown when the boards are in their Error state
-class BoardError(Exception):
-    pass
 
 
 #connection
@@ -64,9 +62,15 @@ def Open():
     print('Connected.')
 
 
+def BoardsRunning():
+    if GetValue(VAR_BRK_POS) == None or GetValue(VAR_BRK_POS) == False:
+        return False
+    else:
+        return True
+
 #do a blocking wait until the system is started
 def WaitUntilRunning():
-    while GetValue(VAR_BRK_POS) == None or GetValue(VAR_BRK_POS) == False:
+    while BoardsRunning() == False:
         pass
 
 
@@ -84,19 +88,30 @@ def Close():
     DEVELOPER USE ONLY
    --------------------'''
 
+#send a message telling the boards to enter error state
+#send a set value comand over usb to the comms board which will then send it on the canbus
+#returns True on success, False on failure
+def EnterErrorState():
+    global serial
+    if serial:
+        
+        message = ADDR_COMMS_USB + ADDR_COMMS + CMD_ERROR + '\x00' + '\x00' + intToData(0) + '\xFF'
+
+        serial.write(message)
+        return True
+    else:
+        print('Error setting error state, not connected')
+        return False
+
 #send a set value comand over usb to the comms board which will then send it on the canbus
 #returns True on success, False on failure
 def SetValue(address, variableName, dataValue):
     global serial
     if serial:
-        #todo replace with my own code (and so replace the method in usb.c)
         dataStr = intToData(dataValue);
         
         message = ADDR_COMMS_USB + address + CMD_SET + DATA_LENGTH_SET + variableName + dataStr  + '\xFF'
 
-        #for c in message:
-            #print(c)
-            #print(ord(c))
         serial.write(message)
         #TODO: confirmation of write - return false if the communications board does not reply with success
         return True
@@ -123,7 +138,7 @@ def GetValue(variableName):
             commandType = result[2]
             if commandType != CMD_REPLY:
                 if commandType == CMD_ERROR:
-                    raise BoardError("system has entered error state")
+                    raise error.BoardError("system has entered error state")
 
                 return False
 

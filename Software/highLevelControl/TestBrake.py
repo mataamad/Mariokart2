@@ -5,24 +5,31 @@ import time
 def testBrake():
     print("brake test")
      #testing some of brake.py
-    print("brake position in mm:")
+    print("initial brake position in mm:")
     print(brake.GetPositionMM())
-    print("brake position in adc:")
+    print("initial brake position in adc:")
     print(brake.GetActuatorPositionADCUnits())
 
+
+    print("moving brake to 20mm")
     brake.SetPositionMM(20)
 
     time.sleep(5)
     print("brake position in mm:")
     print(brake.GetPositionMM())
 
+    print("moving brake to 0mm")
     brake.SetPositionMM(0)
 
     time.sleep(5)
 
+    print("brake position in mm:")
+    print(brake.GetPositionMM())
+
+
+    print("setting brake to full on")
     brake.SetFullOn()
 
-    #brake.SetActuatorPositionADCUnits(0)
     print("done brake test")
 
 UsbController.Open()

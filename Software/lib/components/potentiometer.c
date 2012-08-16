@@ -6,7 +6,7 @@
 #include <char_display.h>
 
 unsigned pot_current_value = 0;
-#define BUFFER_SIZE (5)
+#define BUFFER_SIZE (10)
 unsigned pot_value[BUFFER_SIZE];
 int buf_pos = 0;
 

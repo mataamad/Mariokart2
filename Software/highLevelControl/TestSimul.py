@@ -5,8 +5,17 @@ from mariokartAPI import brake
 from mariokartAPI import steering
 from mariokartAPI import speed
 
+import time
+
+def TestSimultaneous():
+    steering.SetAngle(15)
+    brake.SetPositionMM(15)
+    time.sleep(3)
+    brake.SetPositionMM(0)
+    steering.SetAngle(-10)
+    print(speed.GetSpeed())
+
 UsbController.Open()
-steering.SetAngle(15)
-brake.SetPosition(0)
-print(speed.GetSpeed())
+
+TestSimultaneous()
 UsbController.Close()

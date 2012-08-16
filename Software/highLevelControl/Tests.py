@@ -8,6 +8,7 @@ from mariokartAPI import speed
 import TestBrake
 import TestSteering
 import TestSpeedSensor
+import TestSpi
 
 import time
 
@@ -26,10 +27,6 @@ def testLowLevelGetSet():
     UsbController.SetValue(definitions.ADDR_STEERING, definitions.VAR_STEERING_ANGLE, 20)
 
 
-def testSPIWrite():
-    for i in range (1, 50):
-        print(speed.SetAcceleration(240))
-
 #tests were run on import but lets run them again (along with all other ones)
 UsbController.Open()
 UsbController.WaitUntilRunning()
@@ -45,7 +42,9 @@ TestBrake.testBrake()
 print("speed sensor")
 TestSpeedSensor.testSpeedSensor()
 print("spi")
-testSPIWrite()
+TestSpi.testSpiMany()
+print("simultaneous")
+TestSimul.TestSimultaneous()
 
 UsbController.Close()
 

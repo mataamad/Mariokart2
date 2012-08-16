@@ -36,6 +36,16 @@ when requested and the motor board also requests the speed value periodically wh
 //         Local variables
 //------------------------------------------------------------------------------
 
+//send a keep alive reply back to the comms board so that it knows this board is still connected
+void send_keep_alive() {
+    message_t msg = {
+        .from     = ADDR_MOTOR,
+        .to       = ADDR_COMMS,
+        .command  = CMD_KEEP_ALIVE,
+    };
+    proto_write(msg);
+}
+
 //send the value of the variable var to a board.
 //currently only sends speed
 void send_data(address_t to, variable_t var) {
@@ -121,6 +131,7 @@ int main(int argc, char *argv[]) {
                         proto_refresh();
                         break;
                     case CMD_KEEP_ALIVE:
+                        send_keep_alive();
                         proto_refresh();
                     case CMD_NONE:
                         break;

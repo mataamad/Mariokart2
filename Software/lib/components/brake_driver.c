@@ -66,6 +66,10 @@ int do_drive_calculation() {
     if (drive_percent > MAX_DRIVE_PERCENT) {
         drive_percent = MAX_DRIVE_PERCENT;
     }
+
+    if (drive_percent < 5 && drive_percent > 5) {
+        drive_percent = 0;
+    }
     
     //set the duty cycle to the minimum acceptable one for values < 25% - this will cause overshoot but it cannot be helped
     if (drive_percent > 0 && drive_percent < MINIMUM_DRIVE_PERCENT) {
@@ -75,12 +79,10 @@ int do_drive_calculation() {
          drive_percent = -MINIMUM_DRIVE_PERCENT;
     }
 
-    //do not drive the actuator is there is only a small amount of steady state error
-    int error = brake_get_error_magnitude();
-    if (error < BRAKE_MAX_POSITION_ERROR) {
+
+    if (brake_get_error_magnitude() < BRAKE_MAX_POSITION_ERROR) {
         drive_percent = 0;
     }
-
 
     return drive_percent;
 }

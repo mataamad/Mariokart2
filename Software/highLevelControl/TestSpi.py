@@ -4,8 +4,8 @@ import time
 
 def testSpiMany():
     print("running SPI acceleration test")
-    for i in range(1, 255):
-        speed.SetAcceleration(i)
+    for i in range(1, 255/2):
+        speed.SetAcceleration(i*2)
         time.sleep(0.1)
     print("done")
 
