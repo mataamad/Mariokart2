@@ -9,6 +9,7 @@ import TestBrake
 import TestSteering
 import TestSpeedSensor
 import TestSpi
+import TestSimul
 
 import time
 
